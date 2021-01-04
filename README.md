@@ -5,7 +5,8 @@ shGlodPrice
 
 ## 数据来源
 ===========
-每日行情(https://www.sge.com.cn/sjzx/mrhqsj?p=1)
+
+[每日行情](https://www.sge.com.cn/sjzx/mrhqsj?p=1)
 
 
 ## 爬虫部分
