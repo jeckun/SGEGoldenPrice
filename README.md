@@ -4,8 +4,8 @@
 
 ## 数据来源
 
-[每日行情](https://www.sge.com.cn/sjzx/mrhqsj?p=1)
-
+数据来自上海黄金交易所[每日行情](https://www.sge.com.cn/sjzx/mrhqsj?p=1)
+计划每天早盘和午盘收盘后更新。
 
 ## 爬虫部分
 
