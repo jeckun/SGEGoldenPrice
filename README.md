@@ -21,8 +21,6 @@ shGlodPrice
 |__ log                  同步日志
 ···
 
-Spider类自动获取网页内容，并交给TradData类进行格式化处理，然后保存
-
 
 ## 待解决问题
 
