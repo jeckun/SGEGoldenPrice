@@ -1,16 +1,9 @@
 # -*- coding: UTF-8 -*-
-# 开发团队： 洪虎小队
-# 开发人员： jeckun
-# 开发时间： 2020/12/20 23:48
-# 文件名称： os.py
 
 import os
 import json
 
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-os.curdir
-os.chdir
 
 
 def join(*args):

@@ -10,15 +10,7 @@
 ## 目录结构
 
 ```
-shGlodPrice                 
-|__ bin                  编译后代码
-|__ conf                 配置文件
-|__ core
-|  |__ Spider            爬虫类用来获取网页数据
-|  |__ TradeData         数据处理类用来格式化获得的交易数据
-|__ db                   数据存放目录
-|__ lib                  公共库
-|__ log                  同步日志
+shGlodPrice
 |__ manager.py           程序入口
 ```
 
