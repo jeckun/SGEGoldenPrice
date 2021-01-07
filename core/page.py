@@ -45,6 +45,7 @@ class PageList(object):
         return ls
 
     def get_daily_glod_quotation_price(self, xpath, day):
+        # 获取每天各类合约的上海黄金交易数据
         item = {}
         item['交易日期'] = day
         tb = self.get_table_xpath(xpath)
@@ -57,14 +58,14 @@ class PageList(object):
         col_xpath = xpath + '/tr/td[1]'
         row_xpath = xpath + '/tr[%d]/td'
         item = self._spider.get_element_by_xpath(
-            xpath=col_xpath, fun=self.column)
+            xpath=col_xpath, fun=self.text)
 
         lines = {}
         columns = []
         for i in range(1, len(item)):
             line_xpath = row_xpath % i
             ls = self._spider.get_element_by_xpath(
-                xpath=line_xpath, fun=self.column)
+                xpath=line_xpath, fun=self.text)
             if ls == [] or item[0] == ls[0]:
                 columns = ls
                 continue
@@ -74,7 +75,7 @@ class PageList(object):
                 table.append(lines)
         return table
 
-    def column(self, elements):
+    def text(self, elements):
         cl = []
         for item in elements:
             cl.append(item.text.replace('\r', '').replace(
