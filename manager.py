@@ -13,14 +13,13 @@ if __name__ == "__main__":
     number = 1
 
     pg = PageList(url)
-    pg.get_list(number, xpath)
+    pg.get_glod_quotation_list(number, xpath)
 
     print('获取到 %d 天的交易数据：' % len(pg.list))
 
-    col = '//table[@class="ke-zeroborder"]/tbody/tr/td[1]'
-    row = '//table[@class="ke-zeroborder"]/tbody/tr[%d]/td'
+    xpath = '//table[@class="ke-zeroborder"]/tbody'
 
     for item in pg.list:
         print(item[0], item[1])
         pg.load(item[1])
-        pg.get_table_xpath(col, row)
+        pg.get_daily_glod_quotation_price(xpath, item[0])

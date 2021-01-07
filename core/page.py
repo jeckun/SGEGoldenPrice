@@ -9,7 +9,7 @@ class PageList(object):
     _params = None
     _spider = None
     _list = []
-    _table = {}
+    _table = []
 
     def __init__(self, url):
         self._url = url
@@ -19,7 +19,7 @@ class PageList(object):
     def list(self):
         return self._list
 
-    def get_list(self, number, xpath):
+    def get_glod_quotation_list(self, number, xpath):
         for i in range(1, number + 1):
             params = {'p': '%d' % i}
             self.load(self._url, params=params)
@@ -44,19 +44,39 @@ class PageList(object):
                        elements[i].attrib['href']])
         return ls
 
-    def get_table_xpath(self, col, row):
-        column = self._spider.get_element_by_xpath(
-            xpath=col, fun=self.column)
-        print(len(column))
-        rows = []
-        for i in range(1, len(column)):
-            xpath = row % i
-            rows += self._spider.get_element_by_xpath(
-                xpath=xpath, fun=self.column)
+    def get_daily_glod_quotation_price(self, xpath, day):
+        item = {}
+        item['交易日期'] = day
+        tb = self.get_table_xpath(xpath)
+        for i in tb:
+            i.update(item)
+        self._table.append(tb)
+
+    def get_table_xpath(self, xpath):
+        table = []
+        col_xpath = xpath + '/tr/td[1]'
+        row_xpath = xpath + '/tr[%d]/td'
+        item = self._spider.get_element_by_xpath(
+            xpath=col_xpath, fun=self.column)
+
+        lines = {}
+        columns = []
+        for i in range(1, len(item)):
+            line_xpath = row_xpath % i
+            ls = self._spider.get_element_by_xpath(
+                xpath=line_xpath, fun=self.column)
+            if ls == [] or item[0] == ls[0]:
+                columns = ls
+                continue
+            for x in range(0, len(columns)):
+                lines[columns[x]] = ls[x]
+            if lines != {}:
+                table.append(lines)
+        return table
 
     def column(self, elements):
         cl = []
         for item in elements:
             cl.append(item.text.replace('\r', '').replace(
-                '\t', '').replace('\n', ''))
+                '\t', '').replace('\n', '').replace(',', ''))
         return cl
