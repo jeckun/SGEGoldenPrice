@@ -20,6 +20,6 @@ if __name__ == "__main__":
     xpath = '//table[@class="ke-zeroborder"]/tbody'
 
     for item in pg.list:
-        print(item[0], item[1])
+        print('正在下载 %s 的交易数据，网址：' % item[0], item[1])
         pg.load(item[1])
         pg.get_daily_glod_quotation_price(xpath, item[0])

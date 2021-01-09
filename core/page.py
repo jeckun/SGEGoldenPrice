@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import time
 from core import SpiderLxml
 
 
@@ -30,6 +30,7 @@ class PageList(object):
         self._params = params
         self._spider = SpiderLxml()
         self._spider.open(url, params=params)
+        time.sleep(3)
 
     def get_list_xpath(self, xpath):
         self._list += self._spider.get_element_by_xpath(
