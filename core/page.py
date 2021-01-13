@@ -82,3 +82,6 @@ class PageList(object):
             cl.append(item.text.replace('\r', '').replace(
                 '\t', '').replace('\n', '').replace(',', ''))
         return cl
+
+    def save_to_db(self, dbEngine):
+        print('保存到数据库')
