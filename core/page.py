@@ -26,6 +26,7 @@ class PageList(object):
             params = {'p': '%d' % i}
             self.load(self._url, params=params)
             self.get_list_xpath(xpath=xpath)
+            print('正在读取第%d页数据' % i)
 
     def load(self, url, params=None):
         self._url = url

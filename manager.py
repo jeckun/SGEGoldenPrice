@@ -13,6 +13,8 @@ if __name__ == "__main__":
     '''
     number = 35
 
+    print('开始获取交易数据...')
+
     pg = PageList(url)
     pg.get_glod_quotation_list(number, xpath)
 
