@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-from core import PageList, Trade
+from core import PageList
+from config import BASE_PATH
 
 
 if __name__ == "__main__":
@@ -10,7 +11,7 @@ if __name__ == "__main__":
     xpath = '''//div[@class="articleList border_ea mt30 mb30"]/ul/li/a |
                //div[@class="articleList border_ea mt30 mb30"]/ul/li/a/span[2]
     '''
-    number = 0
+    number = 35
 
     pg = PageList(url)
     pg.get_glod_quotation_list(number, xpath)
@@ -24,5 +25,4 @@ if __name__ == "__main__":
         pg.load(item[1])
         pg.get_daily_glod_quotation_price(xpath, item[0])
 
-    tr = Trade()
-    pg.save_to_db(tr)
+    pg.save_to_db()

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
 from core import SpiderLxml
+from datetime import datetime
+from core.db import Trade, session
 
 
 # 这个类用来解析网页
@@ -83,5 +85,36 @@ class PageList(object):
                 '\t', '').replace('\n', '').replace(',', ''))
         return cl
 
-    def save_to_db(self, dbEngine):
-        print('保存到数据库')
+    def save_to_db(self):
+        for dt in self._table:
+            for line in dt:
+                row = Trade(code=line['合约'],
+                            open_price=float(0.0 if (
+                                len(line['开盘价']) == 0) else line['开盘价']),
+                            high_price=float(0.0 if (
+                                len(line['最高价']) == 0) else line['最高价']),
+                            low_price=float(0.0 if (
+                                len(line['最低价']) == 0) else line['最低价']),
+                            close_price=float(0.0 if (
+                                len(line['收盘价']) == 0) else line['收盘价']),
+                            spread=float(0.0 if (
+                                len(line['涨跌（元）']) == 0) else line['涨跌（元）']),
+                            extent=float(0.0 if len(line['涨跌幅']) == 0 else line['涨跌幅'].replace(
+                                '%', '')) / 100,
+                            VWAP=float(0.0 if (
+                                len(line['加权平均价']) == 0) else line['加权平均价']),
+                            volume=float(0.0 if (
+                                len(line['成交量']) == 0) else line['成交量']),
+                            turnover=float(0.0 if (
+                                len(line['成交金额']) == 0) else line['成交金额']),
+                            hold=float(0.0 if (
+                                len(line['市场持仓']) == 0) else line['市场持仓']),
+                            settlement=line['交收方向'],
+                            settlement_volume=float(0.0 if (
+                                len(line['交收量']) == 0) else line['交收量']),
+                            trans_date=datetime.strptime(
+                                line['交易日期'], "%Y-%m-%d")
+                            )
+                print(row)
+                session.add(row)
+            session.commit()
