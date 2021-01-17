@@ -82,8 +82,15 @@ class PageList(BaseWeb):
         for item in self.list:
             print('下载交易记录： %s  \t\t\t 网址：' % item[0], item[1])
             # 判断是否已经下载
-            self.load_by_params(item[1])
-            self.get_daily_glod_quotation_price(Table_xpath, item[0])
+            filename = join('data', 'cache', item[0]+'.txt')
+            if not exists(filename):
+                print('下载 %s 日数据\n' % item[0])
+                self.load_by_params(item[1])
+                tb = self.get_daily_glod_quotation_price(Table_xpath, item[0])
+                self.cache(filename=filename, content=tb)
+            else:
+                print('从缓存加载 %s 日数据\n' % item[0])
+                self._table.append(read_list_from_json(filename))
 
         self.save_to_db()
         # 下载没有下载的数据，并且保存到数据库
@@ -112,18 +119,11 @@ class PageList(BaseWeb):
         tb = []
         item['交易日期'] = day
 
-        # 有缓存的从缓存中读取
-        filename = join('data', 'cache', day+'.txt')
-        if not exists(filename):
-            print('正下载 %s 日数据' % day)
-            tb = self.get_table_by_xpath(xpath, function=self.text)
-            for i in tb:
-                i.update(item)
-            self.cache(filename=filename, content=tb)
-        else:
-            print('从缓存加载 %s 日数据' % day)
-            tb = read_list_from_json(filename)
+        tb = self.get_table_by_xpath(xpath, function=self.text)
+        for i in tb:
+            i.update(item)
         self._table.append(tb)
+        return tb.copy()
 
     def text(self, elements):
         cl = []
@@ -133,7 +133,7 @@ class PageList(BaseWeb):
         return cl
 
     def convert_float(self, item):
-        val = str(item).replace('-', '').replace('%', '').replace(',', '')
+        val = str(item).replace('%', '').replace(',', '')
         return 0.0 if len(val) == 0 else float(val)
 
     def trade_exists(self, code, trade_date):
@@ -147,34 +147,45 @@ class PageList(BaseWeb):
 
     def save_to_db(self):
         for dt in self._table:
-            for line in dt:
-                try:
-                    if not self.trade_exists(line['合约'], line['交易日期']):
-                        row = Trade(code=line['合约'],
-                                    trans_date=datetime.strptime(
-                                        line['交易日期'], "%Y-%m-%d"),
-                                    open_price=self.convert_float(line['开盘价']),
-                                    high_price=self.convert_float(line['最高价']),
-                                    low_price=self.convert_float(line['最低价']),
-                                    close_price=self.convert_float(
-                                        line['收盘价']),
-                                    spread=self.convert_float(line['涨跌（元）']),
-                                    extent=self.convert_float(
-                                        line['涨跌幅']) / 100,
-                                    VWAP=self.convert_float(line['加权平均价']),
-                                    volume=self.convert_float(line['成交量']),
-                                    turnover=self.convert_float(line['成交金额']),
-                                    hold=self.convert_float(line['市场持仓']),
-                                    settlement=line['交收方向'],
-                                    settlement_volume=self.convert_float(
-                                        line['交收量'])
-                                    )
-                        self._session.add(row)
-                        print('保存到数据库:', line['交易日期'], line['合约'])
-                    else:
-                        print('已有数据，跳过。 日期：%s  合约：%s' %
-                              (line['交易日期'], line['合约']))
-                except Exception as e:
-                    print('error :', e)
-                    save_log(e)
-            self._session.commit()
+            try:
+                for line in dt:
+                    try:
+                        if not self.trade_exists(line['合约'], line['交易日期']):
+                            row = Trade(code=line['合约'],
+                                        trans_date=datetime.strptime(
+                                            line['交易日期'], "%Y-%m-%d"),
+                                        open_price=self.convert_float(
+                                            line['开盘价']),
+                                        high_price=self.convert_float(
+                                            line['最高价']),
+                                        low_price=self.convert_float(
+                                            line['最低价']),
+                                        close_price=self.convert_float(
+                                            line['收盘价']),
+                                        spread=self.convert_float(
+                                            line['涨跌（元）']),
+                                        extent=self.convert_float(
+                                            line['涨跌幅']) / 100,
+                                        VWAP=self.convert_float(line['加权平均价']),
+                                        volume=self.convert_float(line['成交量']),
+                                        turnover=self.convert_float(self.convert_float(
+                                            line['成交金额'])),
+                                        hold=0.0 if line['市场持仓'] == '-' or line['市场持仓'] == '' else self.convert_float(
+                                            line['市场持仓']),
+                                        settlement=str(
+                                            line['交收方向']).replace('-', ''),
+                                        settlement_volume=self.convert_float(
+                                            line['交收量'])
+                                        )
+                            self._session.add(row)
+                            print('保存到数据库:', line['交易日期'], line['合约'])
+                        else:
+                            print('已有数据，跳过。 日期：%s  合约：%s' %
+                                  (line['交易日期'], line['合约']))
+                    except Exception as e:
+                        print('error :', e)
+                        save_log(e.args[0])
+                self._session.commit()
+            except Exception as e:
+                print('error :', e)
+                save_log(e.args[0])
