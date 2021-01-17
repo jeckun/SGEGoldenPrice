@@ -4,82 +4,58 @@ from core import SpiderLxml
 from datetime import datetime
 from core.db import Trade, session
 from lib.os import save_log, exists, join, save_list_by_json, read_list_from_json
+from config import Table_xpath, col_xpath, row_xpath
 
 
-# 这个类用来解析网页
-class PageList(object):
+class BaseWeb(object):
     _url = ''
-    _params = None
     _spider = None
     _list = []
     _table = []
 
-    def __init__(self, url):
+    def __init__(self, url=None):
         self._url = url
         pass
+
+    def __repr__(self):
+        return "<BaseWeb(Host=%s)>" % self._url
 
     @property
     def list(self):
         return self._list
 
-    def get_glod_quotation_list(self, number, xpath):
-        print('读取交易数据目录...')
-        for i in range(1, number + 1):
-            params = {'p': '%d' % i}
-            self.load(self._url, params=params)
-            self.get_list_xpath(xpath=xpath)
-            print('第 %d 页： ok' % i)
+    @property
+    def table(self):
+        return self._table
 
-    def load(self, url, params=None):
+    def cache(self, filename, content):
+        save_list_by_json(filename, tb)
+
+    def load_by_params(self, url, params=None):
         self._url = url
         self._params = params
         self._spider = SpiderLxml()
         self._spider.open(url, params=params)
         time.sleep(3)
 
-    def get_list_xpath(self, xpath):
-        self._list += self._spider.get_element_by_xpath(
-            xpath=xpath, fun=self.analysis_list)
-        return self._list
+    def get_list_by_xpath(self, xpath, function):
+        lst = []
+        lst += self._spider.get_element_by_xpath(
+            xpath=xpath, fun=function)
+        return lst.copy()
 
-    def analysis_list(self, elements):
-        # 解析每日交易列表
-        ls = []
-        for i in range(0, len(elements), 2):
-            ls.append([elements[i+1].text, self._spider.host +
-                       elements[i].attrib['href']])
-        return ls
-
-    def get_daily_glod_quotation_price(self, xpath, day):
-        # 获取每天各类合约的上海黄金交易数据
-        item = {}
-        tb = []
-        item['交易日期'] = day
-        # 检查是否已经下载，已经下载的从缓存中读取
-        filename = join('data', 'cache', day+'.txt')
-        if not exists(filename):
-            tb = self.get_table_xpath(xpath)
-            for i in tb:
-                i.update(item)
-            save_list_by_json(filename, tb)
-        else:
-            tb = read_list_from_json(filename)
-        self._table.append(tb)
-
-    def get_table_xpath(self, xpath):
-        # 从交易明细中获取表格内容
+    def get_table_by_xpath(self, xpath, function):
+        # 获取页面中表格数据
         table = []
-        col_xpath = xpath + '/tr/td[1]'
-        row_xpath = xpath + '/tr[%d]/td'
         item = self._spider.get_element_by_xpath(
-            xpath=col_xpath, fun=self.text)
+            xpath=col_xpath, fun=function)
 
         lines = {}
         columns = []
         for i in range(1, len(item)):
             line_xpath = row_xpath % i
             ls = self._spider.get_element_by_xpath(
-                xpath=line_xpath, fun=self.text)
+                xpath=line_xpath, fun=function)
             if ls == [] or item[0] == ls[0]:
                 columns = ls
                 continue
@@ -87,7 +63,64 @@ class PageList(object):
                 lines[columns[x]] = ls[x]
             if lines != {}:
                 table.append(lines.copy())
-        return table
+        return table.copy()
+
+
+class PageList(BaseWeb):
+
+    def download_trade(self, number, xpath):
+
+        print('获取下载列表...')
+
+        # 获取下载列表
+        self.get_glod_quotation_list(number, xpath)
+
+        print('下载 %d 天交易数据' % len(self.list))
+
+        for item in self.list:
+            print('下载交易记录： %s  \t\t\t 网址：' % item[0], item[1])
+            # 判断是否已经下载
+            self.load_by_params(item[1])
+            self.get_daily_glod_quotation_price(Table_xpath, item[0])
+
+        self.save_to_db()
+        # 下载没有下载的数据，并且保存到数据库
+
+        pass
+
+    def get_glod_quotation_list(self, number, xpath):
+        print('读取交易数据目录...')
+        for i in range(1, number + 1):
+            params = {'p': '%d' % i}
+            self.load_by_params(self._url, params=params)
+            self._list += self.get_list_by_xpath(
+                xpath=xpath, function=self.analysis_list)
+            print('第 %d 页： ok' % i)
+
+    def analysis_list(self, elements):
+        # 解析每日交易列表
+        ls = []
+        for i in range(0, len(elements), 2):
+            ls.append([elements[i+1].text, self._spider.host +
+                       elements[i].attrib['href']])
+        return ls.copy()
+
+    def get_daily_glod_quotation_price(self, xpath, day):
+        # 获取每天各类合约的上海黄金交易数据
+        item = {}
+        tb = []
+        item['交易日期'] = day
+
+        # 有缓存的从缓存中读取
+        filename = join('data', 'cache', day+'.txt')
+        if not exists(filename):
+            tb = self.get_table_by_xpath(xpath, function=self.text)
+            for i in tb:
+                i.update(item)
+            self.cache(filename=filename, content=tb)
+        else:
+            tb = read_list_from_json(filename)
+        self._table.append(tb)
 
     def text(self, elements):
         cl = []
@@ -112,7 +145,6 @@ class PageList(object):
     def save_to_db(self):
         for dt in self._table:
             for line in dt:
-                print('保存到数据库:', line['交易日期'], line['合约'])
                 try:
                     if not self.trade_exists(line['合约'], line['交易日期']):
                         row = Trade(code=line['合约'],
@@ -135,6 +167,10 @@ class PageList(object):
                                         line['交收量'])
                                     )
                         session.add(row)
+                        print('保存到数据库:', line['交易日期'], line['合约'])
+                    else:
+                        print('已有数据，跳过。 日期：%s  合约：%s' %
+                              (line['交易日期'], line['合约']))
                 except Exception as e:
                     print('error :', e)
                     save_log(e)
