@@ -54,6 +54,12 @@ def save_list_B(filename, list):
         f.writelines(json.dumps(list, ensure_ascii=False))
 
 
+def save_log(content):
+    filename = os.path.join(BASE_PATH, 'data', 'error.log')
+    with open(filename, 'a', encoding='utf-8') as f:
+        f.writelines(content + '\n')
+
+
 def save_to_file(filename, lst, args):
     try:
         with open(filename, 'w', encoding='utf-8') as f:

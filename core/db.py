@@ -13,6 +13,7 @@ class Trade(Base):
     __tablename__ = 'trader'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
+    trans_date = Column(Date)  # 交易日期
     code = Column(String(20), nullable=False)  # 合约
     open_price = Column(Numeric(10, 2), default=0.00)  # 开盘价
     high_price = Column(Numeric(10, 2))  # 最高价
@@ -26,7 +27,6 @@ class Trade(Base):
     hold = Column(Numeric(10, 2))  # 市场持仓
     settlement = Column(String(20))  # 交收方向
     settlement_volume = Column(Numeric(10, 2))  # 交收量
-    trans_date = Column(Date)  # 交易日期
 
     def __repr__(self):
         return "<Trade(trans_date='%s' code='%s')>" % (self.trans_date.strftime('%Y-%m-%d'), self.code)

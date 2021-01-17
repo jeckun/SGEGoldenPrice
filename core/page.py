@@ -3,6 +3,7 @@ import time
 from core import SpiderLxml
 from datetime import datetime
 from core.db import Trade, session
+from lib.os import save_log
 
 
 # 这个类用来解析网页
@@ -58,6 +59,7 @@ class PageList(object):
         self._table.append(tb)
 
     def get_table_xpath(self, xpath):
+        # 从交易明细中获取表格内容
         table = []
         col_xpath = xpath + '/tr/td[1]'
         row_xpath = xpath + '/tr[%d]/td'
@@ -76,7 +78,7 @@ class PageList(object):
             for x in range(0, len(columns)):
                 lines[columns[x]] = ls[x]
             if lines != {}:
-                table.append(lines)
+                table.append(lines.copy())
         return table
 
     def text(self, elements):
@@ -90,6 +92,8 @@ class PageList(object):
         for dt in self._table:
             for line in dt:
                 row = Trade(code=line['合约'],
+                            trans_date=datetime.strptime(
+                                line['交易日期'], "%Y-%m-%d"),
                             open_price=float(0.0 if (
                                 len(line['开盘价']) == 0) else line['开盘价']),
                             high_price=float(0.0 if (
@@ -112,10 +116,12 @@ class PageList(object):
                                 len(line['市场持仓']) == 0) else line['市场持仓']),
                             settlement=line['交收方向'],
                             settlement_volume=float(0.0 if (
-                                len(line['交收量']) == 0) else line['交收量']),
-                            trans_date=datetime.strptime(
-                                line['交易日期'], "%Y-%m-%d")
+                                len(line['交收量']) == 0) else line['交收量'])
                             )
                 print(row)
-                session.add(row)
+                try:
+                    session.add(row)
+                except Exception as e:
+                    print('error :', e)
+                    save_log(e)
             session.commit()
