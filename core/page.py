@@ -12,9 +12,11 @@ class BaseWeb(object):
     _spider = None
     _list = []
     _table = []
+    _session = None
 
     def __init__(self, url=None):
         self._url = url
+        self._session = session
         pass
 
     def __repr__(self):
@@ -29,7 +31,7 @@ class BaseWeb(object):
         return self._table
 
     def cache(self, filename, content):
-        save_list_by_json(filename, tb)
+        save_list_by_json(filename, content)
 
     def load_by_params(self, url, params=None):
         self._url = url
@@ -89,13 +91,12 @@ class PageList(BaseWeb):
         pass
 
     def get_glod_quotation_list(self, number, xpath):
-        print('读取交易数据目录...')
         for i in range(1, number + 1):
             params = {'p': '%d' % i}
             self.load_by_params(self._url, params=params)
             self._list += self.get_list_by_xpath(
                 xpath=xpath, function=self.analysis_list)
-            print('第 %d 页： ok' % i)
+            print('正在读取第 %d 页.' % i)
 
     def analysis_list(self, elements):
         # 解析每日交易列表
@@ -114,11 +115,13 @@ class PageList(BaseWeb):
         # 有缓存的从缓存中读取
         filename = join('data', 'cache', day+'.txt')
         if not exists(filename):
+            print('正下载 %s 日数据' % day)
             tb = self.get_table_by_xpath(xpath, function=self.text)
             for i in tb:
                 i.update(item)
             self.cache(filename=filename, content=tb)
         else:
+            print('从缓存加载 %s 日数据' % day)
             tb = read_list_from_json(filename)
         self._table.append(tb)
 
@@ -135,7 +138,7 @@ class PageList(BaseWeb):
 
     def trade_exists(self, code, trade_date):
         # 判断交易记录是否已经存在
-        our_trade = session.query(
+        our_trade = self._session.query(
             Trade).filter_by(trans_date=trade_date).filter_by(code=code).first()
         if our_trade:
             return True
@@ -166,7 +169,7 @@ class PageList(BaseWeb):
                                     settlement_volume=self.convert_float(
                                         line['交收量'])
                                     )
-                        session.add(row)
+                        self._session.add(row)
                         print('保存到数据库:', line['交易日期'], line['合约'])
                     else:
                         print('已有数据，跳过。 日期：%s  合约：%s' %
@@ -174,4 +177,4 @@ class PageList(BaseWeb):
                 except Exception as e:
                     print('error :', e)
                     save_log(e)
-            session.commit()
+            self._session.commit()
