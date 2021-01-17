@@ -151,6 +151,8 @@ class PageList(BaseWeb):
                 for line in dt:
                     try:
                         if not self.trade_exists(line['合约'], line['交易日期']):
+                            hold_tag = '市场持仓' if int(
+                                line['交易日期'][:4]) > 2018 else '持仓量'
                             row = Trade(code=line['合约'],
                                         trans_date=datetime.strptime(
                                             line['交易日期'], "%Y-%m-%d"),
@@ -170,10 +172,10 @@ class PageList(BaseWeb):
                                         volume=self.convert_float(line['成交量']),
                                         turnover=self.convert_float(self.convert_float(
                                             line['成交金额'])),
-                                        hold=0.0 if line['市场持仓'] == '-' or line['市场持仓'] == '' else self.convert_float(
-                                            line['市场持仓']),
+                                        hold=0.0 if line[hold_tag] == '-' or line[hold_tag] == '' else self.convert_float(
+                                            line[hold_tag]),
                                         settlement=str(
-                                            line['交收方向']).replace('-', ''),
+                                            line['交收方向'] if line['交易日期'] <= '2014-09-04' else '').replace('-', ''),
                                         settlement_volume=self.convert_float(
                                             line['交收量'])
                                         )
