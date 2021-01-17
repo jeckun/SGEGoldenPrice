@@ -11,7 +11,7 @@ if __name__ == "__main__":
     xpath = '''//div[@class="articleList border_ea mt30 mb30"]/ul/li/a |
                //div[@class="articleList border_ea mt30 mb30"]/ul/li/a/span[2]
     '''
-    number = 35
+    number = 1
 
     print('开始获取交易数据...')
 

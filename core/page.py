@@ -100,28 +100,41 @@ class PageList(object):
         val = str(item).replace('-', '').replace('%', '').replace(',', '')
         return 0.0 if len(val) == 0 else float(val)
 
+    def trade_exists(self, code, trade_date):
+        # 判断交易记录是否已经存在
+        our_trade = session.query(
+            Trade).filter_by(trans_date=trade_date).filter_by(code=code).first()
+        if our_trade:
+            return True
+        else:
+            return False
+
     def save_to_db(self):
         for dt in self._table:
             for line in dt:
                 print('保存到数据库:', line['交易日期'], line['合约'])
-                row = Trade(code=line['合约'],
-                            trans_date=datetime.strptime(
-                                line['交易日期'], "%Y-%m-%d"),
-                            open_price=self.convert_float(line['开盘价']),
-                            high_price=self.convert_float(line['最高价']),
-                            low_price=self.convert_float(line['最低价']),
-                            close_price=self.convert_float(line['收盘价']),
-                            spread=self.convert_float(line['涨跌（元）']),
-                            extent=self.convert_float(line['涨跌幅']) / 100,
-                            VWAP=self.convert_float(line['加权平均价']),
-                            volume=self.convert_float(line['成交量']),
-                            turnover=self.convert_float(line['成交金额']),
-                            hold=self.convert_float(line['市场持仓']),
-                            settlement=line['交收方向'],
-                            settlement_volume=self.convert_float(line['交收量'])
-                            )
                 try:
-                    session.add(row)
+                    if not self.trade_exists(line['合约'], line['交易日期']):
+                        row = Trade(code=line['合约'],
+                                    trans_date=datetime.strptime(
+                                        line['交易日期'], "%Y-%m-%d"),
+                                    open_price=self.convert_float(line['开盘价']),
+                                    high_price=self.convert_float(line['最高价']),
+                                    low_price=self.convert_float(line['最低价']),
+                                    close_price=self.convert_float(
+                                        line['收盘价']),
+                                    spread=self.convert_float(line['涨跌（元）']),
+                                    extent=self.convert_float(
+                                        line['涨跌幅']) / 100,
+                                    VWAP=self.convert_float(line['加权平均价']),
+                                    volume=self.convert_float(line['成交量']),
+                                    turnover=self.convert_float(line['成交金额']),
+                                    hold=self.convert_float(line['市场持仓']),
+                                    settlement=line['交收方向'],
+                                    settlement_volume=self.convert_float(
+                                        line['交收量'])
+                                    )
+                        session.add(row)
                 except Exception as e:
                     print('error :', e)
                     save_log(e)
