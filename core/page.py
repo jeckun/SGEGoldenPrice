@@ -3,7 +3,7 @@ import time
 from core import SpiderLxml
 from datetime import datetime
 from core.db import Trade, session
-from lib.os import save_log
+from lib.os import save_log, exists, join, save_list_by_json, read_list_from_json
 
 
 # 这个类用来解析网页
@@ -23,11 +23,12 @@ class PageList(object):
         return self._list
 
     def get_glod_quotation_list(self, number, xpath):
+        print('读取交易数据目录...')
         for i in range(1, number + 1):
             params = {'p': '%d' % i}
             self.load(self._url, params=params)
             self.get_list_xpath(xpath=xpath)
-            print('正在读取第%d页数据' % i)
+            print('第 %d 页： ok' % i)
 
     def load(self, url, params=None):
         self._url = url
@@ -52,10 +53,17 @@ class PageList(object):
     def get_daily_glod_quotation_price(self, xpath, day):
         # 获取每天各类合约的上海黄金交易数据
         item = {}
+        tb = []
         item['交易日期'] = day
-        tb = self.get_table_xpath(xpath)
-        for i in tb:
-            i.update(item)
+        # 检查是否已经下载，已经下载的从缓存中读取
+        filename = join('data', 'cache', day+'.txt')
+        if not exists(filename):
+            tb = self.get_table_xpath(xpath)
+            for i in tb:
+                i.update(item)
+            save_list_by_json(filename, tb)
+        else:
+            tb = read_list_from_json(filename)
         self._table.append(tb)
 
     def get_table_xpath(self, xpath):
@@ -88,37 +96,30 @@ class PageList(object):
                 '\t', '').replace('\n', '').replace(',', ''))
         return cl
 
+    def convert_float(self, item):
+        val = str(item).replace('-', '').replace('%', '').replace(',', '')
+        return 0.0 if len(val) == 0 else float(val)
+
     def save_to_db(self):
         for dt in self._table:
             for line in dt:
+                print('保存到数据库:', line['交易日期'], line['合约'])
                 row = Trade(code=line['合约'],
                             trans_date=datetime.strptime(
                                 line['交易日期'], "%Y-%m-%d"),
-                            open_price=float(0.0 if (
-                                len(line['开盘价']) == 0) else line['开盘价']),
-                            high_price=float(0.0 if (
-                                len(line['最高价']) == 0) else line['最高价']),
-                            low_price=float(0.0 if (
-                                len(line['最低价']) == 0) else line['最低价']),
-                            close_price=float(0.0 if (
-                                len(line['收盘价']) == 0) else line['收盘价']),
-                            spread=float(0.0 if (
-                                len(line['涨跌（元）']) == 0) else line['涨跌（元）']),
-                            extent=float(0.0 if len(line['涨跌幅']) == 0 else line['涨跌幅'].replace(
-                                '%', '')) / 100,
-                            VWAP=float(0.0 if (
-                                len(line['加权平均价']) == 0) else line['加权平均价']),
-                            volume=float(0.0 if (
-                                len(line['成交量']) == 0) else line['成交量']),
-                            turnover=float(0.0 if (
-                                len(line['成交金额']) == 0) else line['成交金额']),
-                            hold=float(0.0 if (
-                                len(line['市场持仓']) == 0) else line['市场持仓']),
+                            open_price=self.convert_float(line['开盘价']),
+                            high_price=self.convert_float(line['最高价']),
+                            low_price=self.convert_float(line['最低价']),
+                            close_price=self.convert_float(line['收盘价']),
+                            spread=self.convert_float(line['涨跌（元）']),
+                            extent=self.convert_float(line['涨跌幅']) / 100,
+                            VWAP=self.convert_float(line['加权平均价']),
+                            volume=self.convert_float(line['成交量']),
+                            turnover=self.convert_float(line['成交金额']),
+                            hold=self.convert_float(line['市场持仓']),
                             settlement=line['交收方向'],
-                            settlement_volume=float(0.0 if (
-                                len(line['交收量']) == 0) else line['交收量'])
+                            settlement_volume=self.convert_float(line['交收量'])
                             )
-                print(row)
                 try:
                     session.add(row)
                 except Exception as e:

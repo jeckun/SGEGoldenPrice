@@ -18,12 +18,12 @@ if __name__ == "__main__":
     pg = PageList(url)
     pg.get_glod_quotation_list(number, xpath)
 
-    print('获取到 %d 天的交易数据：' % len(pg.list))
+    print('下载 %d 天交易数据' % len(pg.list))
 
     xpath = '//table[@class="ke-zeroborder"]/tbody'
 
     for item in pg.list:
-        print('正在下载 %s 的交易数据，网址：' % item[0], item[1])
+        print('下载交易记录： %s  \t\t\t 网址：' % item[0], item[1])
         pg.load(item[1])
         pg.get_daily_glod_quotation_price(xpath, item[0])
 

@@ -21,6 +21,10 @@ def makdir(path):
     os.mkdir(path)
 
 
+def delfile(filename):
+    os.remove(filename)
+
+
 def save_to_file(filename, content, fun, overwrite=False):
     '''
     # 保存列表或者字典等集合内容到文件。
@@ -49,9 +53,14 @@ def save_dict(filename, dict):
             f.writelines(item + '\t' + dict[item]+'\n')
 
 
-def save_list_B(filename, list):
+def save_list_by_json(filename, list):
     with open(filename, 'w', encoding='utf-8') as f:
         f.writelines(json.dumps(list, ensure_ascii=False))
+
+
+def read_list_from_json(filename):
+    with open(filename, 'r', encoding='utf-8') as f:
+        return json.loads(f.readline(), encoding='utf-8')
 
 
 def save_log(content):
