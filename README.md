@@ -18,7 +18,9 @@ shGlodPrice
 
 修改 manager.py 中的 number 值，这个表示需要爬取的列表页数，默认一页10天的数据。然后执行下面的命令即可。
 ```
-$ python manager.py
+$ python manager.py           # 默认下载最新一页的数据
+$ python manager.py 10        # 带一个数字，表示下载最新10页数据
+$ python manager.py 10 20     # 带两个数字，表示从几页开始下载到第几页，可以有选择性的下载历史某段时间的数据。
 ```
 
 ## 更新记录

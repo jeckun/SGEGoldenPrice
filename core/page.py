@@ -70,12 +70,15 @@ class BaseWeb(object):
 
 class PageList(BaseWeb):
 
-    def download_trade(self, number, xpath):
+    def download(self, number, xpath):
+        self.download_trade(1, number, xpath)
+
+    def download_trade(self, star, end, xpath):
 
         print('获取下载列表...')
 
         # 获取下载列表
-        self.get_glod_quotation_list(number, xpath)
+        self.get_glod_quotation_list(star, end, xpath)
 
         print('下载 %d 天交易数据' % len(self.list))
 
@@ -95,15 +98,13 @@ class PageList(BaseWeb):
         self.save_to_db()
         # 下载没有下载的数据，并且保存到数据库
 
-        pass
-
-    def get_glod_quotation_list(self, number, xpath):
-        for i in range(1, number + 1):
+    def get_glod_quotation_list(self, star, end, xpath):
+        for i in range(star, end + 1):
             params = {'p': '%d' % i}
+            print('正在读取第 %d 页.' % i)
             self.load_by_params(self._url, params=params)
             self._list += self.get_list_by_xpath(
                 xpath=xpath, function=self.analysis_list)
-            print('正在读取第 %d 页.' % i)
 
     def analysis_list(self, elements):
         # 解析每日交易列表

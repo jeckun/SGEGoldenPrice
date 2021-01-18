@@ -9,6 +9,10 @@
             "type": "python",
             "request": "launch",
             "program": "${file}",
+            "args": [
+                "1",
+                "2"
+            ],
             "console": "integratedTerminal"
         }
     ]
