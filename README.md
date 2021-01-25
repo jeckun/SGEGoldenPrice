@@ -11,6 +11,8 @@
 
 ```
 shGlodPrice
+|__ core
+|__ lib
 |__ manager.py           程序入口
 ```
 
