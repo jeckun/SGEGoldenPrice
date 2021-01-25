@@ -11,7 +11,7 @@
 
 ```
 shGlodPrice
-|__ core
+|__ core                 主要代码
 |__ lib
 |__ manager.py           程序入口
 ```
@@ -27,6 +27,7 @@ $ python manager.py 10 20     # 带两个数字，表示从几页开始下载到
 
 ## 更新记录
 
+- 2021-1-25 合并glodTrade分支，作为主要分支。
 - 2021-1-22 开启glodTrade分支。
 - 2021-1-19 完善shgoldprice命令行参数
 - 2021-1-18 实现数据保存时去重与爬取效率提升
