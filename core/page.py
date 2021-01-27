@@ -157,13 +157,13 @@ class PageList(BaseWeb):
                             row = Trade(code=line['合约'],
                                         trans_date=datetime.strptime(
                                             line['交易日期'], "%Y-%m-%d"),
-                                        open_price=self.convert_float(
+                                        open=self.convert_float(
                                             line['开盘价']),
-                                        high_price=self.convert_float(
+                                        high=self.convert_float(
                                             line['最高价']),
-                                        low_price=self.convert_float(
+                                        low=self.convert_float(
                                             line['最低价']),
-                                        close_price=self.convert_float(
+                                        close=self.convert_float(
                                             line['收盘价']),
                                         spread=self.convert_float(
                                             line['涨跌（元）']),
