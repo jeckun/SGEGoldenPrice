@@ -10,8 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "args": [
-                "1",
-                "1"
+                "today"
             ],
             "console": "integratedTerminal"
         }

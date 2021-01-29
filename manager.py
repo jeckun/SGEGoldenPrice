@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 from core import PageList
+from core.webdriver import execut_download_day_glod_price
 from config import URL, Catalog_List
 
 
@@ -13,6 +14,10 @@ def main(args):
         if len(args) == 2:
             star = int(args[0])
             end = int(args[1])
+        elif len(args) == 1 and args[0] == 'today':
+            # 获取日线记录
+            execut_download_day_glod_price(
+                "https://quote.cngold.org/gjs/jjs_hjtd.html")
         elif len(args) == 1:
             end = int(args[0])
         else:
