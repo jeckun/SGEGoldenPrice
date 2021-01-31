@@ -35,10 +35,9 @@ def execut_get_all_price(url):
     x, y = pyautogui.position()
     print("当前鼠标位置", x, y)
 
-    for i in range(3950):
-        pyautogui.typewrite(["left"], 0.25)
-        get_price(dr)
-        time.sleep(0.1)
+    pyautogui.typewrite(["left"], 0.25)
+    get_price(dr)
+    time.sleep(0.1)
 
 
 def text(element):
