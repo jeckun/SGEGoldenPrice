@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 from core import PageList
-from core.webdriver import execut_download_day_glod_price
+from core.webdriver import execut_download_price, execut_get_all_price
 from config import URL, Catalog_List
 
 
@@ -16,8 +16,9 @@ def main(args):
             end = int(args[1])
         elif len(args) == 1 and args[0] == 'today':
             # 获取日线记录
-            execut_download_day_glod_price(
-                "https://quote.cngold.org/gjs/jjs_hjtd.html")
+            url = "https://quote.cngold.org/gjs/jjs_hjtd.html"
+            execut_get_all_price(url)
+            # execut_download_price(url)
         elif len(args) == 1:
             end = int(args[0])
         else:

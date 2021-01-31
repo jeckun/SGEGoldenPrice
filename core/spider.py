@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-
-
 import requests
 from lxml import etree
+from selenium import webdriver
 from urllib.parse import urlparse
 
 
@@ -50,3 +49,66 @@ class SpiderLxml(BaseSpider):
 
     def get_element(self, xpath):
         return self._html.xpath(xpath)
+
+
+EXECUTABLE_PATH = "C:\Python\Selenium\ChromeDriver\chromedriver.exe"
+
+
+class SpiderSelenium(BaseSpider):
+    def __init__(self):
+        if EXECUTABLE_PATH:
+            self.driver = webdriver.Chrome(EXECUTABLE_PATH)
+        else:
+            self.driver = webdriver.Chrome()
+
+    def find_element_by_class_name(self, clsname, fun=None):
+        if fun:
+            return fun(self.driver.find_element_by_class_name(clsname))
+        else:
+            return self.driver.find_element_by_class_name(clsname)
+
+    def find_elements_by_class_name(self, clsname, fun=None):
+        if fun:
+            return fun(self.driver.find_elements_by_class_name(clsname))
+        else:
+            return self.driver.find_elements_by_class_name(clsname)
+
+    def find_element_by_id(self, id, fun=None):
+        if fun:
+            return fun(self.driver.find_element_by_id(id))
+        else:
+            return self.driver.find_element_by_id(id)
+
+    def find_elements_by_id(self, id, fun=None):
+        if fun:
+            return fun(self.driver.find_elements_by_id(id))
+        else:
+            return self.driver.find_elements_by_id(id)
+
+    def find_element_by_xpath(self, xpath, fun=None):
+        if fun:
+            return fun(self.driver.find_element_by_xpath(xpath))
+        else:
+            return self.driver.find_element_by_xpath(xpath)
+
+    def find_elements_by_xpath(self, xpath, fun=None):
+        if fun:
+            return fun(self.driver.find_elements_by_xpath(xpath))
+        else:
+            return self.driver.find_elements_by_xpath(xpath)
+
+    def open(self, url):
+        self._url = url
+        ul = urlparse(self._url)
+        if ul.scheme and ul.hostname:
+            self._host = ul.scheme + '://' + ul.hostname
+        self.driver.get(url)
+
+    def max_window(self):
+        self.driver.maximize_window()
+
+    def min_window(self):
+        self.driver.minimize_window()
+
+    def quit(self):
+        self.driver.quit()

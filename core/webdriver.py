@@ -1,78 +1,138 @@
 # -*- coding: utf-8 -*-
 from selenium import webdriver
+from core import SpiderSelenium
+import pyautogui
 import time
 
-EXECUTABLE_PATH = "C:\Python\Selenium\ChromeDriver\chromedriver.exe"
 
-
-class webEngine(object):
-    def __init__(self):
-        if EXECUTABLE_PATH:
-            self.driver = webdriver.Chrome(EXECUTABLE_PATH)
-        else:
-            self.driver = webdriver.Chrome()
-
-    def find_element_by_class_name(self, clsname):
-        return self.driver.find_element_by_class_name(clsname)
-
-    def find_element_by_id(self, id):
-        return self.driver.find_element_by_id(id)
-
-    def find_element_by_xpath(self, xpath):
-        return self.driver.find_element_by_xpath(xpath)
-
-    def open(self, url):
-        self.driver.get(url)
-
-    def max_window(self):
-        self.driver.maximize_window()
-
-    def min_window(self):
-        self.driver.minimize_window()
-
-    def quit(self):
-        self.driver.quit()
-
-
-def execut_download_day_glod_price(url):
-    dr = webEngine()
+def execut_get_all_price(url):
+    # 获取收盘后
+    dr = SpiderSelenium()
     dr.open(url)
     dr.max_window()
 
     dr.find_element_by_class_name("b_controll").click()
 
+    elements = dr.find_elements_by_class_name("close")
+    for el in elements:
+        if el.tag_name == 'img':
+            el.click()
+
+    dr.find_element_by_class_name("kke_cfg_fullscreen").click()
+
+    # drawRct()
+
+    width, height = pyautogui.size()
+    print("分辨率", width, height)
+
+    pyautogui.click(150, 170)
+    pyautogui.click(1630, 500)
+
+    # time.sleep(5)
+    x, y = pyautogui.position()
+    print("当前鼠标位置", x, y)
+
+    for i in range(200):
+        pyautogui.typewrite(["left"], 0.25)
+        get_price(dr)
+        time.sleep(0.3)
+
+
+def drawRct():
+    # 测试鼠标控制
+    for i in range(10):
+        pyautogui.moveTo(300, 300, duration=0.25)
+        pyautogui.moveTo(400, 300, duration=0.25)
+        pyautogui.moveTo(400, 400, duration=0.25)
+        pyautogui.moveTo(300, 400, duration=0.25)
+
+
+def text(element):
+    return element.text
+
+
+def cutDate(element):
+    date = element.text[:10].replace('/', '-')
+    time = element.text[12:]+":01"
+    week = element.text[11:12]
+    return [date + " " + time, week]
+
+
+def get_price(dr):
+    price = {}
+    price.update(
+        {"name": dr.find_element_by_xpath('//*[@id="tkChart_Hq"]/div[3]/div/div[5]/table/thead/tr[1]/th/span', text)})
+    price.update(
+        {"time": dr.find_element_by_xpath('//*[@id="tkChart_Hq"]/div[3]/div/div[5]/table/tbody/tr[1]/th/span', cutDate)})
+    price.update(
+        {"price": dr.find_element_by_xpath('//*[@id="tkChart_Hq"]/div[3]/div/div[5]/table/tbody/tr[2]/td/span', text)})
+    price.update(
+        {"av_price": dr.find_element_by_xpath('//*[@id="tkChart_Hq"]/div[3]/div/div[5]/table/tbody/tr[3]/td/span', text)})
+    price.update(
+        {"upOrdown": dr.find_element_by_xpath('//*[@id="tkChart_Hq"]/div[3]/div/div[5]/table/tbody/tr[4]/td/span', text)})
+    price.update(
+        {"deal": dr.find_element_by_xpath('//*[@id="tkChart_Hq"]/div[3]/div/div[5]/table/tbody/tr[5]/td/span', text)})
+    print(price["time"], price["name"], price["price"],
+          price["av_price"], price["upOrdown"], price["deal"])
+
+
+def execut_download_price(url):
+    # 获取实时行情数据
+    dr = SpiderSelenium()
+    dr.open(url)
+    dr.max_window()
+
+    dr.find_element_by_class_name("b_controll").click()
+    dr.find_element_by_xpath(
+        "//*[@class='calendar']/div[1]/h3[2]").click()
+
     price = {}
     price["quote_time"] = dr.find_element_by_id("quote_time").text
 
-    while dr.find_element_by_id("status_em").text == "交易中":
+    while dr.find_element_by_id("status_em").text != "交易中":
         try:
-            if price["quote_time"] != dr.find_element_by_id("quote_time").text:
+            if price["quote_time"] == dr.find_element_by_id("quote_time", text):
                 price.update({"name": dr.find_element_by_xpath(
-                    '//*[@id="realtime_showname"]/span').text})
+                    '//*[@id="realtime_showname"]/span', text)})
                 price.update(
-                    {"quote_time": dr.find_element_by_id("quote_time").text})
+                    {"quote_time": dr.find_element_by_id("quote_time", text)})
                 price.update(
-                    {"now_price": dr.find_element_by_id("now_price").text})
+                    {"now_price": dr.find_element_by_id("now_price", text)})
                 price.update(
-                    {"average_price": dr.find_element_by_xpath('//*[@id="tkChart_Hq"]/div[2]/span[4]').text})
-                # price.update(
-                #     {"deal": dr.find_element_by_xpath('//*[@id="tkChart_Hq"]/div[3]/div/div[5]/table/tbody/tr[5]/td/span').text})
+                    {"average_price": dr.find_element_by_xpath('//*[@id="tkChart_Hq"]/div[2]/span[4]', text)})
                 price.update(
-                    {"upordown": dr.find_element_by_id("upOrDown_div").text})
+                    {"upordown": dr.find_element_by_id("upOrDown_div", text)})
                 price.update(
-                    {"buy_price": dr.find_element_by_id("buy_price").text})
+                    {"buy_price": dr.find_element_by_id("buy_price", text)})
                 price.update(
-                    {"sell_price": dr.find_element_by_id("sell_price").text})
+                    {"sell_price": dr.find_element_by_id("sell_price", text)})
                 price.update(
-                    {"open_price": dr.find_element_by_id("open_price").text})
+                    {"open_price": dr.find_element_by_id("open_price", text)})
                 price.update(
-                    {"close_price": dr.find_element_by_id("close_price").text})
+                    {"close_price": dr.find_element_by_id("close_price", text)})
                 price.update(
-                    {"high_price": dr.find_element_by_id("high_price").text})
+                    {"high_price": dr.find_element_by_id("high_price", text)})
                 price.update(
-                    {"low_price": dr.find_element_by_id("low_price").text})
-                print(price["name"], price["quote_time"],
-                      price["now_price"], price["average_price"])
+                    {"low_price": dr.find_element_by_id("low_price", text)})
+
+                price.update({
+                    "five_leval": dr.find_element_by_class_name("five_leval", text)
+                })
+
+                if len(price["five_leval"].text) > 0:
+                    price.update({
+                        "five_leval":
+                        [item.split(' ')
+                         for item in price["five_leval"].text.split('\n')]
+                    })
+                else:
+                    price.update({"five_leval": []})
+
+                print(price["quote_time"],  price["name"],
+                      "最新价格", price["now_price"],
+                      "均价", price["average_price"],
+                      price["five_leval"][4],
+                      price["five_leval"][5])
         except Exception as e:
-            pass
+            print(e)
         time.sleep(1)
