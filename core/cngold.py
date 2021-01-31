@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 from selenium import webdriver
+from datetime import datetime
 from core import SpiderSelenium
+from core.db import TimeSharingChart, session
 import pyautogui
 import time
+import re
 
 
 def execut_get_all_price(url):
@@ -32,19 +35,10 @@ def execut_get_all_price(url):
     x, y = pyautogui.position()
     print("当前鼠标位置", x, y)
 
-    for i in range(200):
+    for i in range(3950):
         pyautogui.typewrite(["left"], 0.25)
         get_price(dr)
-        time.sleep(0.3)
-
-
-def drawRct():
-    # 测试鼠标控制
-    for i in range(10):
-        pyautogui.moveTo(300, 300, duration=0.25)
-        pyautogui.moveTo(400, 300, duration=0.25)
-        pyautogui.moveTo(400, 400, duration=0.25)
-        pyautogui.moveTo(300, 400, duration=0.25)
+        time.sleep(0.1)
 
 
 def text(element):
@@ -55,7 +49,12 @@ def cutDate(element):
     date = element.text[:10].replace('/', '-')
     time = element.text[12:]+":01"
     week = element.text[11:12]
-    return [date + " " + time, week]
+    return date + " " + time
+
+
+def cutupOrdown(element):
+    ls = re.split('[()]', element)
+    return ls[:2]
 
 
 def get_price(dr):
@@ -74,6 +73,41 @@ def get_price(dr):
         {"deal": dr.find_element_by_xpath('//*[@id="tkChart_Hq"]/div[3]/div/div[5]/table/tbody/tr[5]/td/span', text)})
     print(price["time"], price["name"], price["price"],
           price["av_price"], price["upOrdown"], price["deal"])
+    save_to_db(price)
+
+
+def convert_float(item):
+    val = str(item).replace('%', '').replace(',', '').replace('手', '')
+    return 0.0 if len(val) == 0 else float(val)
+
+
+def exists(table, code, trade_date):
+    # 判断交易记录是否已经存在
+    our_trade = session.query(
+        table).filter_by(trans_date=trade_date).filter_by(code=code).first()
+    if our_trade:
+        return True
+    else:
+        return False
+
+
+def save_to_db(line):
+    if not exists(TimeSharingChart, line['name'], datetime.strptime(
+            line['time'], "%Y-%m-%d %H:%M:%S")):
+        row = TimeSharingChart(
+            code=line['name'],
+            trans_date=datetime.strptime(
+                line['time'], "%Y-%m-%d %H:%M:%S"),
+            price=convert_float(line['price']),
+            VWAP=convert_float(line['av_price']),
+            spread=convert_float(cutupOrdown(line['upOrdown'])[0]),
+            extent=convert_float(cutupOrdown(line['upOrdown'])[1]) / 100,
+            volume=convert_float(line['deal'])
+        )
+        session.add(row)
+        session.commit()
+    else:
+        print('已经存在跳过导入：', line['name'], line['time'])
 
 
 def execut_download_price(url):

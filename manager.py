@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
+from core.db import sqliteEngine
 from core import PageList
-from core.webdriver import execut_download_price, execut_get_all_price
+from core.cngold import execut_download_price, execut_get_all_price
 from config import URL, Catalog_List
 
 
@@ -22,13 +23,16 @@ def main(args):
         elif len(args) == 1:
             end = int(args[0])
         else:
+            sql = "delete from timeSharing where id >= 3510 and id <= 3650;"
+            eg = sqliteEngine('data/foo.db')
+            eg.execut_sql(sql)
             pass
     except Exception as e:
         print('Error: %s' % e.args)
         sys.exit(2)
 
-    pg = PageList(URL)
-    pg.download_trade(star=star, end=end, xpath=Catalog_List)
+    # pg = PageList(URL)
+    # pg.download_trade(star=star, end=end, xpath=Catalog_List)
     # pg.download(number=number, xpath=Catalog_List)
 
 
