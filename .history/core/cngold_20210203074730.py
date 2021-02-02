@@ -14,17 +14,16 @@ def execut_get_all_price(url, days):
     dr.open(url)
     dr.max_window()
 
-    # 关闭弹幕
     dr.find_element_by_class_name("b_controll").click()
 
-    # 关闭广告条
     elements = dr.find_elements_by_class_name("close")
     for el in elements:
         if el.tag_name == 'img':
             el.click()
 
-    # 全屏展示
     dr.find_element_by_class_name("kke_cfg_fullscreen").click()
+
+    # drawRct()
 
     width, height = pyautogui.size()
     print("分辨率", width, height)
@@ -32,6 +31,7 @@ def execut_get_all_price(url, days):
     pyautogui.click(150, 170)
     pyautogui.click(1630, 500)
 
+    # time.sleep(5)
     x, y = pyautogui.position()
     print("当前鼠标位置", x, y)
 

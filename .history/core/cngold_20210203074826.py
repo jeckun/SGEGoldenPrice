@@ -14,7 +14,6 @@ def execut_get_all_price(url, days):
     dr.open(url)
     dr.max_window()
 
-    # 关闭弹幕
     dr.find_element_by_class_name("b_controll").click()
 
     # 关闭广告条

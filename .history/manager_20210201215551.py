@@ -18,15 +18,15 @@ def main(args):
         elif len(args) == 1 and args[0] == 'today':
             # 获取日线记录
             url = "https://quote.cngold.org/gjs/jjs_hjtd.html"
-            execut_get_all_price(url, 1)
+            execut_get_all_price(url)
             # execut_download_price(url)
         elif len(args) == 1:
             end = int(args[0])
         else:
             # sql = "delete from timeSharing where id >= 3510 and id <= 3650;"
-            # sql = "select * from timeSharing where id >= 3510 and id <= 3650;"
-            # eg = sqliteEngine('data/foo.db')
-            # eg.execut_sql(sql)
+            sql = "select * from timeSharing where id >= 3510 and id <= 3650;"
+            eg = sqliteEngine('data/foo.db')
+            eg.execut_sql(sql)
             pass
     except Exception as e:
         print('Error: %s' % e.args)

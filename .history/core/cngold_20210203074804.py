@@ -14,7 +14,6 @@ def execut_get_all_price(url, days):
     dr.open(url)
     dr.max_window()
 
-    # 关闭弹幕
     dr.find_element_by_class_name("b_controll").click()
 
     # 关闭广告条
@@ -23,7 +22,6 @@ def execut_get_all_price(url, days):
         if el.tag_name == 'img':
             el.click()
 
-    # 全屏展示
     dr.find_element_by_class_name("kke_cfg_fullscreen").click()
 
     width, height = pyautogui.size()
