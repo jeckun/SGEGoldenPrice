@@ -36,12 +36,11 @@ def execut_get_all_price(url, days):
     print("当前鼠标位置", x, y)
 
     # 获取每天每分钟的行情数据
-    n = 0
     for i in range(780*days):
-        n += get_price(dr)
-        if n > 1560:            # 检测到重复数据n次时自动退出
-            break
         pyautogui.typewrite(["left"], 0.25)
+        a += get_price(dr)
+        if a > 100:            # 检测到重复数据100次时自动退出
+            break
         time.sleep(0.1)
 
 
