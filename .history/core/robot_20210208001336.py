@@ -9,7 +9,6 @@ import pyautogui
 
 class Robot(object):
     isSavetoDB = False
-    quote_time = ''
 
     def __init__(self, url):
         self._url = url
@@ -47,8 +46,8 @@ class Robot(object):
         else:
             # 开始盯盘
             price = {}
-            if self.quote_time != self._spider.find_element_by_id(
-                    "quote_time", self.text) and self.get_state() != "交易中":
+
+            while self.get_state() == "交易中":
                 try:
                     price.update({"name": self._spider.find_element_by_xpath(
                         '//*[@id="realtime_showname"]/span', self.text)})
@@ -89,9 +88,7 @@ class Robot(object):
                               "均价", price["average_price"],
                               price["five_leval"][4],
                               price["five_leval"][5])
-                    # 记录时间
-                    self.quote_time = price["quote_time"]
-                    # 进行判断
+
                 except Exception as e:
                     print(e)
 

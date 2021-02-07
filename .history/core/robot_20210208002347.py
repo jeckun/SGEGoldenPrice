@@ -91,7 +91,7 @@ class Robot(object):
                               price["five_leval"][5])
                     # 记录时间
                     self.quote_time = price["quote_time"]
-                    # 进行判断
+                    # 进行逻辑判断
                 except Exception as e:
                     print(e)
 
