@@ -42,7 +42,6 @@ def execut_get_all_price(url, days):
         if n > 1560:            # 检测到重复数据n次时自动退出
             break
         pyautogui.typewrite(["left"], 0.25)
-        n = 0
         time.sleep(0.1)
 
 

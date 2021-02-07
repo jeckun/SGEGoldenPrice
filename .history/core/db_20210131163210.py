@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import sqlite3
 import sqlalchemy
+import sqlite3
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, Column, Float, Integer, String, Text, Date, DateTime
