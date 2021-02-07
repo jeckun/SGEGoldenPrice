@@ -2,9 +2,9 @@
 import sys
 from core.db import sqliteEngine
 from core import PageList
-# from core.cngold import execut_download_price, execut_get_all_price
-from core.robot import Robot
+from core.cngold import execut_download_price, execut_get_all_price
 from config import URL, Catalog_List
+from robot import Robot
 
 
 def main(args):
@@ -20,10 +20,11 @@ def main(args):
             pg.download_trade(star=star, end=end, xpath=Catalog_List)
         elif len(args) == 1 and args[0] == 'robot':
             # 获取日线记录
+
+        elif len(args) == 1 and args[0] == 'today':
+            # 获取日线记录
             url = "https://quote.cngold.org/gjs/jjs_hjtd.html"
-            rt = Robot(url)
-            rt.run()
-            # execut_get_all_price(url, 5)
+            execut_get_all_price(url, 5)
             # execut_download_price(url)
         elif len(args) == 1:
             end = int(args[0])

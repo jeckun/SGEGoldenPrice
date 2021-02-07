@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "args": [
-                "today"
+                "robot"
             ],
             "console": "integratedTerminal"
         }
