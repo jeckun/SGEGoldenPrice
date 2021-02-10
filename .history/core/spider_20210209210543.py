@@ -56,11 +56,14 @@ EXECUTABLE_PATH = "C:\Python\Selenium\ChromeDriver\chromedriver.exe"
 
 class SpiderSelenium(BaseSpider):
     def __init__(self):
+        option = webdriver.ChromeOptions()
+        option.add_argument('headless')
+
         if EXECUTABLE_PATH:
             self.driver = webdriver.Chrome(
-                executable_path=EXECUTABLE_PATH)
+                executable_path=EXECUTABLE_PATH, chrome_options=option)
         else:
-            self.driver = webdriver.Chrome()
+            self.driver = webdriver.Chrome(chrome_options=option)
 
     def find_element_by_class_name(self, clsname, fun=None):
         if fun:

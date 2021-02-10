@@ -13,6 +13,10 @@
 ```
 shGlodPrice
 |__ core                 主要代码
+  |__db.py               数据存储
+  |__script.py           爬取脚本（定义不同情况下的爬虫的动作）
+  |__robot.py            一个循环运行的机器人，在指定的时间段，执行既定的任务。循环往复。
+  |__spider.py           爬虫，获取网页信息，并执行脚本
 |__ lib                  共享代码
 |__ manager.py           程序入口
 ```
@@ -21,10 +25,11 @@ shGlodPrice
 
 修改 manager.py 中的 number 值，这个表示需要爬取的列表页数，默认一页10天的数据。然后执行下面的命令即可。
 ```
-$ python manager.py           # 默认下载最新一页的数据
-$ python manager.py 10        # 带一个数字，表示下载最新10页数据
-$ python manager.py 10 20     # 带两个数字，表示从几页开始下载到第几页，可以有选择性的下载历史某段时间的数据。
-$ python manager.py robot     # 自动获取分时走势数据。请勿操作键盘鼠标。
+$ python manager.py           # 默认从上海黄金交易所官网下载最近10天的数据
+$ python manager.py 10        # 带一个数字，表示从上海黄金交易所官网下载最新10页数据
+$ python manager.py 10 20     # 带两个数字，表示从上海黄金交易所官网下载第10页到第20页的数据
+$ python manager.py robot     # 从金投网获取最新实时的黄金价格
+$ python manager.py five      # 从金投网获取最近5天的黄金交易价格
 ```
 
 ## 更新记录

@@ -14,41 +14,47 @@ class Robot(object):
     def __init__(self, url):
         self._url = url
         self._spider = SpiderSelenium()
-        self.isSavetoDB = True
+        # self.isSavetoDB = False
 
     def run(self):
         # 加载页面
         self.load(self._url)
         while True:
-            self.refresh()
+            # self.refresh()
             self.check()
-            time.sleep(1)
+            # print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            time.sleep(5)
 
     def check(self):
         # 检查交易状态
         if self.get_state() == "闭市" and self.isSavetoDB == False:
             # 如果不在交易中，获取最近5天的交易数据
             # 全屏展示
+            try:
+                self._spider.find_element_by_class_name(
+                    "kke_cfg_fullscreen").click()
+                # 显示最近5天的交易数据
+                pyautogui.click(150, 170)
+                # 获取每天每分钟的行情数据
+                pyautogui.click(1630, 500)
+                n = 0
+                for i in range(780 * 5):
+                    n += self.get_price()
+                    # if n > 1560:            # 检测到重复数据n次时自动退出
+                    #     break
+                    pyautogui.typewrite(["left"], 0.25)
+                    n = 0
+                    time.sleep(0.1)
+            except Exception as e:
+                print(e)
             self._spider.find_element_by_class_name(
                 "kke_cfg_fullscreen").click()
-            # 显示最近5天的交易数据
-            pyautogui.click(150, 170)
-            # 获取每天每分钟的行情数据
-            pyautogui.click(1630, 500)
-            n = 0
-            for i in range(780 * 5):
-                n += self.get_price()
-                if n > 1560:            # 检测到重复数据n次时自动退出
-                    break
-                pyautogui.typewrite(["left"], 0.25)
-                n = 0
-                time.sleep(0.1)
             self.isSavetoDB = True
         else:
             # 开始盯盘
             price = {}
             if self.quote_time != self._spider.find_element_by_id(
-                    "quote_time", self.text) and self.get_state() != "交易中":
+                    "quote_time", self.text) and self.get_state() == "交易中":
                 try:
                     price.update({"name": self._spider.find_element_by_xpath(
                         '//*[@id="realtime_showname"]/span', self.text)})

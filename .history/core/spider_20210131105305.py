@@ -57,8 +57,7 @@ EXECUTABLE_PATH = "C:\Python\Selenium\ChromeDriver\chromedriver.exe"
 class SpiderSelenium(BaseSpider):
     def __init__(self):
         if EXECUTABLE_PATH:
-            self.driver = webdriver.Chrome(
-                executable_path=EXECUTABLE_PATH)
+            self.driver = webdriver.Chrome(EXECUTABLE_PATH)
         else:
             self.driver = webdriver.Chrome()
 
@@ -113,6 +112,3 @@ class SpiderSelenium(BaseSpider):
 
     def quit(self):
         self.driver.quit()
-
-    def execute_script(self, js):
-        self.driver.execute_script(js)

@@ -2,7 +2,7 @@
 import sys
 from core.db import sqliteEngine
 from core import PageList
-from core.robots import Robot
+from core.robot import Robot
 from config import URL, Catalog_List
 
 

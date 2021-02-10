@@ -2,7 +2,7 @@
 import sys
 from core.db import sqliteEngine
 from core import PageList
-from core.robots import Robot
+from core.robot import Robot
 from config import URL, Catalog_List
 
 
@@ -28,14 +28,13 @@ def main(args):
             end = int(args[0])
             pg.download(number=end, xpath=Catalog_List)
         else:
-            # 用来清理垃圾数据
             # sql = "delete from timeSharing where id >= 3510 and id <= 3650;"
             # sql = "select * from timeSharing where id >= 3510 and id <= 3650;"
             # eg = sqliteEngine('data/foo.db')
             # eg.execut_sql(sql)
             pass
     except Exception as e:
-        print('Error:', e)
+        print('Error: %s' % e.args)
         sys.exit(2)
 
 
