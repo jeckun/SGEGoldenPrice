@@ -20,12 +20,14 @@ class Robot(object):
         # 加载页面
         self.load(self._url)
         while True:
+            # self.refresh()
             self.check()
+            # print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             time.sleep(3)
 
     def check(self):
         # 检查交易状态
-        if self.get_state() != "闭市" and self.isSavetoDB == False:
+        if self.get_state() == "闭市" and self.isSavetoDB == False:
             # 如果不在交易中，获取最近5天的交易数据
             # 全屏展示
             try:
@@ -34,10 +36,14 @@ class Robot(object):
                 # 显示最近5天的交易数据
                 pyautogui.click(150, 170)
                 # 获取每天每分钟的行情数据
-                pyautogui.click(1730, 500)
+                pyautogui.click(1630, 500)
+                n = 0
                 for i in range(780 * 5):
-                    self.get_price()
+                    n += self.get_price()
+                    # if n > 1560:            # 检测到重复数据n次时自动退出
+                    #     break
                     pyautogui.typewrite(["left"], 0.25)
+                    n = 0
                     time.sleep(0.1)
             except Exception as e:
                 print(e)
@@ -169,18 +175,10 @@ class Robot(object):
             return 0
         else:
             row = self.exists(TimeSharingChart, line['name'], datetime.strptime(
-                line['time'], "%Y-%m-%d %H:%M:%S"))
+                    line['time'], "%Y-%m-%d %H:%M:%S")):
             if row:
-                row.code = line['name'],
-                row.trans_date = datetime.strptime(
-                    line['time'], "%Y-%m-%d %H:%M:%S"),
-                row.price = self.convert_float(line['price']),
-                row.VWAP = self.convert_float(line['av_price']),
-                row.spread = self.convert_float(
-                    self.cutupOrdown(line['upOrdown'])[0]),
-                row.extent = self.convert_float(
-                    self.cutupOrdown(line['upOrdown'])[1]) / 100,
-                row.volume = self.convert_float(line['deal'])
+                row.name
+                pass
             else:
                 row = TimeSharingChart(
                     code=line['name'],
@@ -194,6 +192,11 @@ class Robot(object):
                         self.cutupOrdown(line['upOrdown'])[1]) / 100,
                     volume=self.convert_float(line['deal'])
                 )
-                session.add(row)
+            session.add(row)
             session.commit()
+            return 0
+        # else:
+            print('已经存在跳过导入：', line['name'], line['time'])
+            row = session.query(
+                TimeSharingChart).filter_by(trans_date=trade_date).filter_by(code=code).first()
             return 1

@@ -20,12 +20,14 @@ class Robot(object):
         # 加载页面
         self.load(self._url)
         while True:
+            # self.refresh()
             self.check()
+            # print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             time.sleep(3)
 
     def check(self):
         # 检查交易状态
-        if self.get_state() != "闭市" and self.isSavetoDB == False:
+        if self.get_state() == "闭市" and self.isSavetoDB == False:
             # 如果不在交易中，获取最近5天的交易数据
             # 全屏展示
             try:
@@ -34,7 +36,8 @@ class Robot(object):
                 # 显示最近5天的交易数据
                 pyautogui.click(150, 170)
                 # 获取每天每分钟的行情数据
-                pyautogui.click(1730, 500)
+                pyautogui.click(1630, 500)
+                n = 0
                 for i in range(780 * 5):
                     self.get_price()
                     pyautogui.typewrite(["left"], 0.25)
