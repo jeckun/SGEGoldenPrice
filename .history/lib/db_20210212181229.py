@@ -9,13 +9,13 @@ from sqlalchemy import create_engine, Column, Float, Integer, String, Text, Date
 from sqlalchemy.orm import sessionmaker
 
 from config import DB_PATH
-# from Sge.db import Trade
 
 Base = declarative_base()
 
 
-class Engine(object):
-    session = None
+class Engine:
+    def __init__(self):
+        pass
 
     def connect(self, filename=None, echo=True):
         if filename == None and echo == True:
@@ -41,24 +41,24 @@ class Engine(object):
     def update(self, row):
         self.session.commit()
 
-    # def find(self, **kwargs):
-    #     cmd = "self.session.query(%s)" % self.__class__.__name__
-    #     for kw in kwargs:
-    #         cmd += ".filter(%s.%s == '%s')" % (self.__class__.__name__, kw,
-    #                                            kwargs[kw])
-    #     cmd += ".first()"
-    #     return eval(cmd)
+    def find(self, **kwargs):
+        cmd = "self.session.query(%s)" % self.__class__.__name__
+        for kw in kwargs:
+            cmd += ".filter(%s.%s == '%s')" % (self.__class__.__name__, kw,
+                                               kwargs[kw])
+        cmd += ".first()"
+        return eval(cmd)
 
-    # def filter(self, **kwargs):
-    #     cmd = "self.session.query(%s)" % self.__class__.__name__
-    #     for kw in kwargs:
-    #         cmd += ".filter(%s.%s == '%s')" % (self.__class__.__name__, kw,
-    #                                            kwargs[kw])
-    #     return eval(cmd)
+    def filter(self, **kwargs):
+        cmd = "self.session.query(%s)" % self.__class__.__name__
+        for kw in kwargs:
+            cmd += ".filter(%s.%s == '%s')" % (self.__class__.__name__, kw,
+                                               kwargs[kw])
+        return eval(cmd)
 
-    # def query_all(self):
-    #     cmd = "self.session.query(%s).all()" % self.__class__.__name__
-    #     return eval(cmd)
+    def query_all(self):
+        cmd = "self.session.query(%s).all()" % self.__class__.__name__
+        return eval(cmd)
 
 
 class sqliteEngine(object):

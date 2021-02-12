@@ -71,7 +71,7 @@ class Module:
         self.engine = engine
 
     # 执行脚本
-    def run(self, robot: BaseRobot, **kwargs):
+    def run(self, robot: Robot, **kwargs):
         pass
 
     @property

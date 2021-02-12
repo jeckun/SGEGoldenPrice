@@ -7,7 +7,7 @@ from config import sge_xpath
 from datetime import datetime
 from core import Module, Robot
 from Sge.db import Trade
-from lib.base import text, cache, exists, join, load_by_json, save_to_json, save_log
+from lib.base import text, cache, exists, join, load_by_json, save_to_json
 
 
 class Sge(Module):

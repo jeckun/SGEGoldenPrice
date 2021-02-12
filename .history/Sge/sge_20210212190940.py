@@ -7,7 +7,7 @@ from config import sge_xpath
 from datetime import datetime
 from core import Module, Robot
 from Sge.db import Trade
-from lib.base import text, cache, exists, join, load_by_json, save_to_json, save_log
+from lib.base import text, cache, exists, join, load_by_json, save_to_json
 
 
 class Sge(Module):
@@ -104,8 +104,8 @@ class Sge(Module):
                                             line['涨跌幅']) / 100,
                                         VWAP=self.convert_float(line['加权平均价']),
                                         volume=self.convert_float(line['成交量']),
-                                        turnover=self.convert_float(
-                                            line['成交金额']),
+                                        turnover=self.convert_float(self.convert_float(
+                                            line['成交金额'])),
                                         hold=0.0 if line[hold_tag] == '-' or line[hold_tag] == '' else self.convert_float(
                                             line[hold_tag]),
                                         settlement=str(
@@ -120,7 +120,8 @@ class Sge(Module):
                                   (line['交易日期'], line['合约']))
                     except Exception as e:
                         print('error :', e)
-                        save_log(e.args[0])
+                        # save_log(e.args[0])
+                # self._session.commit()
             except Exception as e:
                 print('error :', e)
-                save_log(e.args[0])
+                # save_log(e.args[0])

@@ -7,7 +7,7 @@ from config import sge_xpath
 from datetime import datetime
 from core import Module, Robot
 from Sge.db import Trade
-from lib.base import text, cache, exists, join, load_by_json, save_to_json, save_log
+from lib.base import text, cache, exists, join, load_by_json, save_to_json
 
 
 class Sge(Module):
@@ -120,7 +120,5 @@ class Sge(Module):
                                   (line['交易日期'], line['合约']))
                     except Exception as e:
                         print('error :', e)
-                        save_log(e.args[0])
             except Exception as e:
                 print('error :', e)
-                save_log(e.args[0])

@@ -7,7 +7,7 @@ from config import sge_xpath
 from datetime import datetime
 from core import Module, Robot
 from Sge.db import Trade
-from lib.base import text, cache, exists, join, load_by_json, save_to_json, save_log
+from lib.base import text, cache, exists, join, load_by_json, save_to_json
 
 
 class Sge(Module):
@@ -84,7 +84,7 @@ class Sge(Module):
                     try:
                         rst = eg.session.query(Trade).filter(Trade.code == line['合约'],
                                                              Trade.trans_date == line['交易日期'])
-                        if not rst:
+                        if rst:
                             hold_tag = '市场持仓' if int(
                                 line['交易日期'][:4]) > 2018 else '持仓量'
                             row = Trade(code=line['合约'],
@@ -120,7 +120,8 @@ class Sge(Module):
                                   (line['交易日期'], line['合约']))
                     except Exception as e:
                         print('error :', e)
-                        save_log(e.args[0])
+                        # save_log(e.args[0])
+                # self._session.commit()
             except Exception as e:
                 print('error :', e)
-                save_log(e.args[0])
+                # save_log(e.args[0])
