@@ -8,7 +8,7 @@ from lib.db import Engine
 
 
 # 定义的爬虫类
-# 默认采用BeautifulSoup作为解析器，使用CSS定位或者Tag定位，也可使用xpath定位
+# 默认采用BeautifulSoup作为解析器，使用CSS定位或者Tag定位
 # 主要负责网页爬取和网页元素的查找
 # 爬虫不负责网页数据的转换与处理，由Module负责处理
 class Spider:
@@ -34,8 +34,8 @@ class Spider:
                 response = requests.get(url, headers=headers, cookies=cookies)
             response.encode = 'utf-8'
             html_doc = response.text
-            self.parser = BeautifulSoup(html_doc, 'lxml')         # Bs解析器支持
-            self.xpath = etree.HTML(html_doc)                     # xpath解析器
+            self.parser = BeautifulSoup(html_doc, 'lxml')
+            self.xpath = etree.HTML(html_doc)
             self.module.parser = self.parser
         except Exception as e:
             print('Error: %s' % e)

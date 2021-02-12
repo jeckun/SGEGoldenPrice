@@ -34,8 +34,8 @@ class Spider:
                 response = requests.get(url, headers=headers, cookies=cookies)
             response.encode = 'utf-8'
             html_doc = response.text
-            self.parser = BeautifulSoup(html_doc, 'lxml')         # Bs解析器支持
-            self.xpath = etree.HTML(html_doc)                     # xpath解析器
+            self.parser = BeautifulSoup(html_doc, 'lxml')
+            self.xpath = etree.HTML(html_doc)
             self.module.parser = self.parser
         except Exception as e:
             print('Error: %s' % e)

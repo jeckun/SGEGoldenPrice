@@ -10,8 +10,8 @@
             "request": "launch",
             "program": "${file}",
             "args": [
-                "10",
-                "11"
+                "1",
+                "3"
             ],
             "console": "integratedTerminal"
         }
