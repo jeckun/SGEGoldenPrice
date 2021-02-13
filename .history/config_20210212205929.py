@@ -1,6 +1,7 @@
 import os
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+
 DB_PATH = os.path.join(BASE_PATH, 'data', 'foo.db')
 
 URL = {
@@ -15,4 +16,5 @@ sge_xpath = {
     'catalog_list_span': ".articleList .fr",
     'col':  ".ke-zeroborder tbody tr td:nth-child(1)",
     'row': ".ke-zeroborder tbody tr:nth-child(%d) td",
+    'a': 'table > tbody > tr:nth-child(1) > td:nth-child(1)',
 }

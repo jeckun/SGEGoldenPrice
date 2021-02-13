@@ -6,7 +6,8 @@
 
 数据来自上海黄金交易所[每日行情](https://www.sge.com.cn/sjzx/mrhqsj?p=1)
 
-实时行情数据来源[最新行情](https://quote.cngold.org/gjs/jjs_hjtd.html)
+实时行情数据来源[金投网](https://quote.cngold.org/gjs/jjs_hjtd.html)
+[新浪黄金](https://finance.sina.com.cn/futures/quotes/AUTD.shtml)
 
 ## 目录结构
 
