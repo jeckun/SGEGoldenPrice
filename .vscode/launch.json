@@ -10,8 +10,11 @@
             "request": "launch",
             "program": "${file}",
             "args": [
-                "1",
-                "1"
+                "export",
+                "Au(T+D)",
+                "10",
+                // "300",
+                // "316"
             ],
             "console": "integratedTerminal"
         }
