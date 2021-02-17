@@ -15,15 +15,10 @@ def main(args):
         rt = Robot(spider=sp, script=sge_script)
         if len(args) == 2 and args[0] == 'del':
             # 用来清理垃圾数据
+            sql = "delete from %s;" % args[1]
             eg = sqliteEngine('data/foo.db')
-            eg.delete_all(args[1])
+            eg.execut_sql(sql)
             pass
-        if len(args) == 2 and args[0] == 'select':
-            # 用来清理垃圾数据
-            eg = sqliteEngine('data/foo.db')
-            rst = eg.select_all(args[1])
-            for it in rst:
-                print('记录：', rst['trans_date'], rst['code'], rst['open'])
         elif len(args) == 2:
             rt.run(star=int(args[0]), end=int(args[1]))
         elif len(args) == 1:

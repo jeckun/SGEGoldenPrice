@@ -13,18 +13,7 @@ def main(args):
         sg = Sge(URL['sge'], Engine)
         sp = Spider(sg)
         rt = Robot(spider=sp, script=sge_script)
-        if len(args) == 2 and args[0] == 'del':
-            # 用来清理垃圾数据
-            eg = sqliteEngine('data/foo.db')
-            eg.delete_all(args[1])
-            pass
-        if len(args) == 2 and args[0] == 'select':
-            # 用来清理垃圾数据
-            eg = sqliteEngine('data/foo.db')
-            rst = eg.select_all(args[1])
-            for it in rst:
-                print('记录：', rst['trans_date'], rst['code'], rst['open'])
-        elif len(args) == 2:
+        if len(args) == 2:
             rt.run(star=int(args[0]), end=int(args[1]))
         elif len(args) == 1:
             rt.run(star=1, end=int(args[0]))
@@ -39,6 +28,13 @@ def main(args):
         elif len(args) == 3 and args[0] == 'export':
             # 获取日线记录
             rt.export_json(code=args[1], days=args[2])
+        elif len(args) == 2 and args[0] == 'del':
+            # 用来清理垃圾数据
+            sql = "delete from timeSharing where id >= 3510 and id <= 3650;"
+            sql = "select * from timeSharing where id >= 3510 and id <= 3650;"
+            eg = sqliteEngine('data/foo.db')
+            eg.execut_sql(sql)
+            pass
         else:
             pass
     except Exception as e:

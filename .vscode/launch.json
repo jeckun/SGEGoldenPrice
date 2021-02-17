@@ -10,11 +10,13 @@
             "request": "launch",
             "program": "${file}",
             "args": [
-                "export",
-                "Au(T+D)",
-                "10",
-                // "300",
-                // "316"
+                // "export",
+                // "Au(T+D)",
+                // "10",
+                // "118",
+                // "118",
+                "select",
+                "trader where trans_date = '2016-04-12';",
             ],
             "console": "integratedTerminal"
         }

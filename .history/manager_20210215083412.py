@@ -21,7 +21,7 @@ def main(args):
         if len(args) == 2 and args[0] == 'select':
             # 用来清理垃圾数据
             eg = sqliteEngine('data/foo.db')
-            rst = eg.select_all(args[1])
+            rst = eg.delete_all(args[1])
             for it in rst:
                 print('记录：', rst['trans_date'], rst['code'], rst['open'])
         elif len(args) == 2:
