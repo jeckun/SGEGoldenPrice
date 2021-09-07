@@ -8,17 +8,11 @@
             "name": "Python: 当前文件",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "spiderSge.py",
             "args": [
-                // "export",
-                // "Au(T+D)",
-                // "10",
-                // "118",
-                // "118",
-                "select",
-                "trader where trans_date = '2016-04-12';",
+                "1",
             ],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
         }
     ]
 }
